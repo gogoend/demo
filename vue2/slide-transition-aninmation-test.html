@@ -17,9 +17,7 @@
 
     .slide-enter-active,
     .slide-leave-active {
-      transition-duration: 1000ms;
-      transition-timing-function: ease;
-      transition-property: transform, opacity;
+      transition: 1000ms ease transform, 250ms ease opacity;
       pointer-events: none;
     }
 
@@ -28,16 +26,17 @@
       opacity: 0;
     }
 
-    .slide-leave-from {
+    .slide-leave {
       transform: translateY(0);
       opacity: 1;
     }
 
     .slide-enter-to {
       transform: translateY(-100%);
+      opacity: 1;
     }
 
-    .slide-enter-from {
+    .slide-enter {
       transform: translateY(0);
       opacity: 0;
     }
@@ -81,7 +80,7 @@
       template: `<div>
             <button @click="addCurrentIndex">add</button>
             <div class="slide-items">
-              <transition name="slide">
+              <transition name="slide" :duration="1000">
                 <div class="slide-item" :key="currentIndex">{{ texts[currentIndex] }}</div>
               </transition>
             </div>
