@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件内容转义并保存</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>非 UTF-8 字符转义工具</h1>
+    <input type="file" id="fileInput" />
+    <button id="processButton">处理文件</button>
+    <a id="downloadLink" style="display:none;">下载转义后的文件</a>
+
+    <script>
+        function escapeNonUtf8ToUnicode(str) {
+            return Array.from(str).map(char => {
+                const code = char.charCodeAt(0);
+                // 仅转义非 ASCII 字符
+                if (code < 128) {
+                    return char; // 保留 ASCII 字符
+                } else {
+                    return `\\u${code.toString(16).padStart(4, '0')}`; // 转换为 \uXXXX 格式
+                }
+            }).join('');
+        }
+
+        document.getElementById('processButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const fileContent = event.target.result;
+                    const escapedContent = escapeNonUtf8ToUnicode(fileContent);
+
+                    // 创建一个 Blob 对象
+                    const blob = new Blob([escapedContent], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+
+                    // 更新下载链接
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.href = url;
+                    downloadLink.download = 'escaped_output.txt'; // 设置下载文件名
+                    downloadLink.style.display = 'block';
+                    downloadLink.textContent = '点击这里下载转义后的文件';
+                };
+                reader.readAsText(file);
+            } else {
+                alert('请先选择一个文件！');
+            }
+        });
+    </script>
+</body>
+</html>
