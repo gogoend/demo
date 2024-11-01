@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module">
+      import "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.js";
+
+      async function getPptxSlideCount(file) {
+        let zip = new JSZip();
+
+        // 加载 PPTX 文件
+        let pptxData = await zip.loadAsync(file);
+
+        // 获取所有文件的列表，并过滤出幻灯片文件（路径为 ppt/slides/）
+        let slideFiles = Object.keys(pptxData.files).filter((fileName) => {
+          return (
+            fileName.startsWith("ppt/slides/") && fileName.endsWith(".xml")
+          );
+        });
+
+        console.log(`幻灯片文件: ${slideFiles}`);
+
+        // 返回幻灯片的数量
+        let slideCount = slideFiles.length;
+
+        console.log(`幻灯片总数: ${slideCount}`);
+        return slideCount;
+      }
+
+      // 假设文件是通过文件选择器或其他方式获取的 Blob
+      let fileInput = document.getElementById("fileInput");
+      fileInput.addEventListener("change", function (event) {
+        let file = event.target.files[0];
+        getPptxSlideCount(file);
+      });
+    </script>
+  </head>
+
+  <body>
+    <label>
+      <input type="file" id="fileInput" />
+    </label>
+  </body>
+</html>
